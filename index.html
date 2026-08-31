@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Интерактивный опрос</title>
-  <!-- Chart.js және Firebase кітапханалары -->
+  <!-- Chart.js және Chart.js Datalabels плагині -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <style>
@@ -44,6 +45,9 @@
   </div>
 
   <script>
+    // ChartDataLabels плагинін белсендіру
+    Chart.register(ChartDataLabels);
+
     // Firebase баптаулары
     const firebaseConfig = {
       apiKey: "AIzaSyB9jkUWkNaKqxD7Gk0_-dCrW32ID9igcIc",
@@ -55,13 +59,12 @@
       appId: "1:1070134468672:web:07146858d76d2425c47fa5"
     };
 
-    // Firebase-ті іске қосу
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
     const categories = ["Здоровье", "Экология", "Образование", "Безопасность", "Транспорт", "Общение", "Быт и экономия времени", "Другое"];
 
-    // Чекбокстарды шығару
+    // Чекбокстарды орнату
     const categoriesContainer = document.getElementById('categoriesContainer');
     categories.forEach((cat, index) => {
       const label = document.createElement('label');
@@ -70,7 +73,7 @@
       categoriesContainer.appendChild(label);
     });
 
-    // Диаграмманы баптау
+    // Анимацияланған және пайызы бар Диаграмма
     const ctx = document.getElementById('resultsChart').getContext('2d');
     const resultsChart = new Chart(ctx, {
       type: 'pie',
@@ -83,13 +86,28 @@
       },
       options: {
         responsive: true,
+        animation: {
+          duration: 1000, // Анимация ұзақтығы (1 секунд)
+          easing: 'easeOutQuart'
+        },
         plugins: {
-          legend: { position: 'bottom' }
+          legend: { position: 'bottom' },
+          datalabels: {
+            color: '#fff',
+            font: { weight: 'bold', size: 12 },
+            formatter: (value, ctx) => {
+              const dataset = ctx.chart.data.datasets[0];
+              const total = dataset.data.reduce((acc, curr) => acc + curr, 0);
+              if (total === 0 || value === 0) return '';
+              const percentage = ((value / total) * 100).toFixed(1) + '%';
+              return percentage;
+            }
+          }
         }
       }
     });
 
-    // Сұрақтарды динамикалы түрде қосу
+    // Динамикалық сұрақтар
     const dynamicQuestions = document.getElementById('dynamicQuestions');
     document.querySelectorAll('.category-checkbox').forEach(checkbox => {
       checkbox.addEventListener('change', (e) => {
@@ -110,7 +128,7 @@
       });
     });
 
-    // Форманы Базаға жіберу
+    // Форманы жіберу
     document.getElementById('surveyForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const checkedBoxes = document.querySelectorAll('.category-checkbox:checked');
@@ -119,12 +137,10 @@
         return;
       }
 
-      // Голостарды сақтау
       checkedBoxes.forEach(box => {
         database.ref('votes/' + box.value).transaction(count => (count || 0) + 1);
       });
 
-      // Идеяларды сақтау
       const textareas = dynamicQuestions.querySelectorAll('textarea');
       textareas.forEach(textarea => {
         if (textarea.value.trim() !== '') {
@@ -140,15 +156,15 @@
       alert('Ваш ответ отправлен!');
     });
 
-    // Базадан дауыстарды өзгелерге де көрсетіп отыру (Realtime)
+    // Realtime деректерді анимациямен жаңарту
     database.ref('votes').on('value', snapshot => {
       const votes = snapshot.val() || {};
       const dataArray = categories.map((_, i) => votes[i] || 0);
       resultsChart.data.datasets[0].data = dataArray;
-      resultsChart.update();
+      resultsChart.update(); // Тегіс анимациямен қайта салады
     });
 
-    // Базадан идеяларды өзгелерге де көрсетіп отыру
+    // Идеяларды оқу
     database.ref('ideas').on('value', snapshot => {
       const ideasList = document.getElementById('ideasList');
       ideasList.innerHTML = '';
