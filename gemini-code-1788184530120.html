@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивный опрос</title>
+    <!-- Chart.js және Firebase кітапханалары -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+        .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .checkbox-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .checkbox-label { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px 12px; border-radius: 6px; background: #f8f9fa; }
+        .dynamic-input { margin-top: 15px; padding-top: 10px; border-top: 1px dashed #ccc; }
+        textarea { width: 100%; height: 60px; margin-top: 5px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        button { background: #4A90E2; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 15px; }
+        .idea-item { background: #f1f8ff; border-left: 4px solid #4A90E2; padding: 8px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0; }
+        .idea-category { font-weight: bold; font-size: 0.85em; color: #555; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Опрос формасы -->
+        <div class="card">
+            <h2>Какие технологии нужны современному человеку?</h2>
+            <form id="surveyForm">
+                <div class="checkbox-group" id="categoriesContainer"></div>
+                <div id="dynamicQuestions"></div>
+                <button type="submit">Отправить свой вариант</button>
+            </form>
+        </div>
+
+        <!-- Онлайн нәтижелер -->
+        <div class="card">
+            <h2>Результаты опроса (Онлайн)</h2>
+            <canvas id="resultsChart"></canvas>
+            <h3 style="margin-top: 30px;">Идеи участников:</h3>
+            <div id="ideasList"><p style="color: #888;">Загрузка данных...</p></div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Осы жерге Firebase-тен алған кілттерді қойыңыз
+        const firebaseConfig = {
+            apiKey: "СІЗДІҢ_API_KEY",
+            authDomain: "СІЗДІҢ_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://СІЗДІҢ_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "СІЗДІҢ_PROJECT_ID",
+            storageBucket: "СІЗДІҢ_PROJECT_ID.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        // Firebase-ті іске қосу
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const categories = ["Здоровье", "Экология", "Образование", "Безопасность", "Транспорт", "Общение", "Быт и экономия времени", "Другое"];
+        
+        // Чекбокстарды шығару
+        const categoriesContainer = document.getElementById('categoriesContainer');
+        categories.forEach((cat, index) => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-label';
+            label.innerHTML = `<input type="checkbox" value="${index}" class="category-checkbox"> <span>${cat}</span>`;
+            categoriesContainer.appendChild(label);
+        });
+
+        // Диаграмманы баптау
+        const ctx = document.getElementById('resultsChart').getContext('2d');
+        const resultsChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: categories,
+                datasets: [{
+                    data: new Array(categories.length).fill(0),
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#8AC926', '#C9CBCF']
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+
+        // Сұрақтарды динамикалы түрде қосу
+        const dynamicQuestions = document.getElementById('dynamicQuestions');
+        document.querySelectorAll('.category-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const catIndex = e.target.value;
+                const catName = categories[catIndex];
+                const blockId = `question-block-${catIndex}`;
+
+                if (e.target.checked) {
+                    const div = document.createElement('div');
+                    div.className = 'dynamic-input';
+                    div.id = blockId;
+                    div.innerHTML = `<label><b>${catName}:</b> что вы предложили бы конкретно?</label><textarea placeholder="Опишите вашу идею..." data-cat="${catName}" required></textarea>`;
+                    dynamicQuestions.appendChild(div);
+                } else {
+                    const block = document.getElementById(blockId);
+                    if (block) block.remove();
+                }
+            });
+        });
+
+        // Форманы Базаға жіберу
+        document.getElementById('surveyForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const checkedBoxes = document.querySelectorAll('.category-checkbox:checked');
+            if (checkedBoxes.length === 0) { alert('Выберите хотя бы одно направление!'); return; }
+
+            // Голостарды сақтау
+            checkedBoxes.forEach(box => {
+                database.ref('votes/' + box.value).transaction(count => (count || 0) + 1);
+            });
+
+            // Идеяларды сақтау
+            const textareas = dynamicQuestions.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                if (textarea.value.trim() !== '') {
+                    database.ref('ideas').push({
+                        category: textarea.getAttribute('data-cat'),
+                        text: textarea.value.trim()
+                    });
+                }
+            });
+
+            e.target.reset();
+            dynamicQuestions.innerHTML = '';
+            alert('Ваш ответ отправлен!');
+        });
+
+        // Базадан дауыстарды өзгелерге де көрсетіп отыру (Realtime)
+        database.ref('votes').on('value', snapshot => {
+            const votes = snapshot.val() || {};
+            const dataArray = categories.map((_, i) => votes[i] || 0);
+            resultsChart.data.datasets[0].data = dataArray;
+            resultsChart.update();
+        });
+
+        // Базадан идеяларды өзгелерге де көрсетіп отыру
+        database.ref('ideas').on('value', snapshot => {
+            const ideasList = document.getElementById('ideasList');
+            ideasList.innerHTML = '';
+            const data = snapshot.val();
+            if (!data) { ideasList.innerHTML = '<p style="color: #888;">Пока нет предложений.</p>'; return; }
+
+            Object.values(data).reverse().forEach(idea => {
+                const item = document.createElement('div');
+                item.className = 'idea-item';
+                item.innerHTML = `<div class="idea-category">${idea.category}</div><div>${idea.text}</div>`;
+                ideasList.appendChild(item);
+            });
+        });
+    </script>
+</body>
+</html>
