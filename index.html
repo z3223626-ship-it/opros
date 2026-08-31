@@ -62,15 +62,24 @@
         const database = firebase.database();
 
         const categories = ["Здоровье", "Экология", "Образование", "Безопасность", "Транспорт", "Общение", "Быт и экономия времени", "Другое"];
-        
-        // Чекбокстарды шығару
-        const categoriesContainer = document.getElementById('categoriesContainer');
-        categories.forEach((cat, index) => {
-            const label = document.createElement('label');
-            label.className = 'checkbox-label';
-            label.innerHTML = `<input type="checkbox" value="${index}" class="category-checkbox"> <span>${cat}</span>`;
-            categoriesContainer.appendChild(label);
-        });
+        // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB9jkUWkNaKqxD7Gk0_-dCrW32ID9igcIc",
+  authDomain: "opros-app.firebaseapp.com",
+  databaseURL: "https://opros-app-default-rtdb.firebaseio.com",
+  projectId: "opros-app",
+  storageBucket: "opros-app.firebasestorage.app",
+  messagingSenderId: "1070134468672",
+  appId: "1:1070134468672:web:07146858d76d2425c47fa5"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
         // Диаграмманы баптау
         const ctx = document.getElementById('resultsChart').getContext('2d');
