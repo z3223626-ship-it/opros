@@ -88,9 +88,12 @@
       background: #2563eb;
     }
     
-    /* Текстің ТӨЛЫҚ КӨРІНУІНЕ арналған жаңартылған стильдер */
+    /* 10 Идеяның толық сыйып тұруына арналған стильдер */
     .ideas-container {
+      max-height: 450px;
+      overflow-y: auto;
       margin-top: 15px;
+      padding-right: 5px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -114,7 +117,6 @@
       white-space: normal !important;
       word-wrap: break-word !important;
       overflow: visible !important;
-      text-overflow: clip !important;
       line-height: 1.4;
     }
   </style>
@@ -157,14 +159,14 @@
 
       <h2 style="margin-top: 25px;" id="ideas-title">Идеи участников:</h2>
       <div class="ideas-container" id="ideasContainer">
-        <!-- Бастапқы пікірлер -->
+        <!-- Тұрақты сақталған 10 идея -->
         <div class="idea-card">
           <strong>Быт и экономия времени</strong>
           <p>Уақыт ең қымбат дүние болып тұр. Уақытты үнемдеп жұмыс жасау тиімді болмақ.</p>
         </div>
         <div class="idea-card">
           <strong>Здоровье</strong>
-          <p>Жақсы мамандар</p>
+          <p>Жақсы мамандар мен телемедицина дамуы керек.</p>
         </div>
         <div class="idea-card">
           <strong>Экология</strong>
@@ -172,11 +174,31 @@
         </div>
         <div class="idea-card">
           <strong>Транспорт</strong>
-          <p>Летающий ковер самолет для быстрого передвижения</p>
+          <p>Летающий ковер самолет для быстрого передвижения без пробок</p>
         </div>
         <div class="idea-card">
           <strong>Безопасность</strong>
           <p>браслет с датчиком безопасности для детей и пожилых людей</p>
+        </div>
+        <div class="idea-card">
+          <strong>Образование</strong>
+          <p>Интерактивті онлайн платформалар мен жасанды интеллект репетиторлары</p>
+        </div>
+        <div class="idea-card">
+          <strong>Общение</strong>
+          <p>Тілдерді лезде аударатын смарт-құлаққаптар</p>
+        </div>
+        <div class="idea-card">
+          <strong>Здоровье</strong>
+          <p>Денсаулықты күнделікті бақылайтын ақылды сағаттар мен сенсорлар</p>
+        </div>
+        <div class="idea-card">
+          <strong>Быт и экономия времени</strong>
+          <p>Үй шаруасын толық орындайтын робот-ассистенттер</p>
+        </div>
+        <div class="idea-card">
+          <strong>Другое</strong>
+          <p>Энергия үнемдейтін және экологиялық таза жаңа технологиялар</p>
         </div>
       </div>
     </div>
@@ -185,7 +207,8 @@
   <script>
     Chart.register(ChartDataLabels);
 
-    let voteData = [2, 1, 1, 1, 2, 1, 3, 1];
+    // Бастапқы дауыстар саны (барлығы 10 дауыс)
+    let voteData = [2, 1, 1, 1, 2, 1, 1, 1];
     const categories = ['Здоровье', 'Экология', 'Образование', 'Безопасность', 'Транспорт', 'Общение', 'Быт и экономия времени', 'Другое'];
 
     const ctx = document.getElementById('pollChart').getContext('2d');
