@@ -88,9 +88,9 @@
       background: #2563eb;
     }
     
-    /* Идеялар тізімінің толық көрінуіне арналған стильдер */
+    /* Идеялар тізімінің стильдері (мәтін кесілмейді, толық ашылады) */
     .ideas-container {
-      max-height: 350px;
+      max-height: 400px;
       overflow-y: auto;
       margin-top: 15px;
       padding-right: 5px;
@@ -98,9 +98,10 @@
     .idea-card {
       background: #f8fafc;
       border-left: 4px solid #10b981;
-      padding: 10px 15px;
-      border-radius: 4px;
+      padding: 12px 15px;
+      border-radius: 6px;
       margin-bottom: 10px;
+      height: auto;
     }
     .idea-card strong {
       display: block;
@@ -111,7 +112,8 @@
       margin: 5px 0 0 0;
       color: #334155;
       white-space: normal;
-      word-break: break-word; /* Мәтін сыртқа шығып кетпей, толық тасымалданады */
+      word-break: break-word;
+      overflow: visible;
     }
   </style>
 </head>
@@ -164,7 +166,7 @@
         </div>
         <div class="idea-card">
           <strong>Экология</strong>
-          <p>Моя мечта — жить в чистом и красивом мире...</p>
+          <p>Моя мечта — жить в чистом и красивом мире и помогать экологии развиваться дальше!</p>
         </div>
         <div class="idea-card">
           <strong>Транспорт</strong>
@@ -172,7 +174,7 @@
         </div>
         <div class="idea-card">
           <strong>Безопасность</strong>
-          <p>браслет с датчиком безопасности</p>
+          <p>браслет с датчиком безопасности для детей и пожилых людей</p>
         </div>
       </div>
     </div>
@@ -198,7 +200,6 @@
       options: {
         plugins: {
           legend: { position: 'bottom' },
-          // Проценттерді дөңгелек диаграмманың үстіне шығару баптауы
           datalabels: {
             formatter: (value, ctx) => {
               let sum = 0;
