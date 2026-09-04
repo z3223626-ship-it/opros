@@ -190,8 +190,8 @@
   <script>
     Chart.register(ChartDataLabels);
 
-    // Дауыстарды браузер жадынан жүктеу (егер жоқ болса, бастапқы 10 дауысты алу)
-    let voteData = JSON.parse(localStorage.getItem('poll_votes')) || [2, 1, 1, 1, 2, 1, 1, 1];
+    // Сақталған дауыстарды браузерден жүктеу
+    let voteData = JSON.parse(localStorage.getItem('poll_votes_v2')) || [2, 1, 1, 1, 2, 1, 1, 1];
     const categories = ['Здоровье', 'Экология', 'Образование', 'Безопасность', 'Транспорт', 'Общение', 'Быт и экономия времени', 'Другое'];
 
     const ctx = document.getElementById('pollChart').getContext('2d');
@@ -222,7 +222,6 @@
       }
     });
 
-    // Бет ашылғанда жалпы дауыстар санын жаңарту
     function updateTotalVotesCount() {
       let total = voteData.reduce((a, b) => a + b, 0);
       document.getElementById('total-votes').innerText = total;
@@ -246,9 +245,8 @@
       if (catIndex !== -1) {
         voteData[catIndex]++;
         
-        // Дауыстарды сақтау
         try {
-          localStorage.setItem('poll_votes', JSON.stringify(voteData));
+          localStorage.setItem('poll_votes_v2', JSON.stringify(voteData));
         } catch(e) {}
 
         pollChart.update();
@@ -262,21 +260,19 @@
         newCard.innerHTML = `<strong>${selected.value}</strong><p>${ideaText}</p>`;
         container.insertBefore(newCard, container.firstChild);
 
-        // Идеяны сақтау
         try {
-          let storedIdeas = JSON.parse(localStorage.getItem('user_ideas') || '[]');
+          let storedIdeas = JSON.parse(localStorage.getItem('user_ideas_v2') || '[]');
           storedIdeas.unshift({ category: selected.value, text: ideaText });
-          localStorage.setItem('user_ideas', JSON.stringify(storedIdeas));
+          localStorage.setItem('user_ideas_v2', JSON.stringify(storedIdeas));
         } catch(e) {}
 
         document.getElementById('user-idea').value = '';
       }
     }
 
-    // Бет ашылғанда сақталған идеяларды автоматты түрде жүктеу
     window.addEventListener('DOMContentLoaded', () => {
       try {
-        let storedIdeas = JSON.parse(localStorage.getItem('user_ideas') || '[]');
+        let storedIdeas = JSON.parse(localStorage.getItem('user_ideas_v2') || '[]');
         const container = document.getElementById('ideasContainer');
         storedIdeas.forEach(idea => {
           const newCard = document.createElement('div');
