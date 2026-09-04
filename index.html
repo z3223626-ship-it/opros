@@ -66,6 +66,19 @@
       gap: 10px;
       cursor: pointer;
     }
+    
+    /* Нақтылайтын сұраққа (Hint) арналған стиль */
+    .idea-hint {
+      display: none; /* Басында жасырулы тұрады, категория таңдалғанда ашылады */
+      background-color: #e0f2fe;
+      color: #0369a1;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      margin-bottom: 12px;
+      border-left: 4px solid #0284c7;
+    }
+
     input[type="text"] {
       width: 100%;
       padding: 10px;
@@ -134,14 +147,20 @@
     <div class="card">
       <h2 id="poll-title">Какие технологии нужны современному человеку? / Қандай технологиялар қажет?</h2>
       <div class="options" id="options-list">
-        <label><input type="radio" name="category" value="Здоровье"> <span class="cat-text">Здоровье</span></label>
-        <label><input type="radio" name="category" value="Экология"> <span class="cat-text">Экология</span></label>
-        <label><input type="radio" name="category" value="Образование"> <span class="cat-text">Образование</span></label>
-        <label><input type="radio" name="category" value="Безопасность"> <span class="cat-text">Безопасность</span></label>
-        <label><input type="radio" name="category" value="Транспорт"> <span class="cat-text">Транспорт</span></label>
-        <label><input type="radio" name="category" value="Общение"> <span class="cat-text">Общение</span></label>
-        <label><input type="radio" name="category" value="Быт и экономия времени"> <span class="cat-text">Быт и экономия времени</span></label>
-        <label><input type="radio" name="category" value="Другое"> <span class="cat-text">Другое</span></label>
+        <label><input type="radio" name="category" value="Здоровье" onchange="showHint()"> <span class="cat-text">Здоровье</span></label>
+        <label><input type="radio" name="category" value="Экология" onchange="showHint()"> <span class="cat-text">Экология</span></label>
+        <label><input type="radio" name="category" value="Образование" onchange="showHint()"> <span class="cat-text">Образование</span></label>
+        <label><input type="radio" name="category" value="Безопасность" onchange="showHint()"> <span class="cat-text">Безопасность</span></label>
+        <label><input type="radio" name="category" value="Транспорт" onchange="showHint()"> <span class="cat-text">Транспорт</span></label>
+        <label><input type="radio" name="category" value="Общение" onchange="showHint()"> <span class="cat-text">Общение</span></label>
+        <label><input type="radio" name="category" value="Быт и экономия времени" onchange="showHint()"> <span class="cat-text">Быт и экономия времени</span></label>
+        <label><input type="radio" name="category" value="Другое" onchange="showHint()"> <span class="cat-text">Другое</span></label>
+      </div>
+
+      <!-- Бағыт таңдалғанда шығатын нақтылайтын сұрақ -->
+      <div id="idea-hint" class="idea-hint">
+        <strong>💡 Уточняющий вопрос для идей:</strong><br>
+        <span id="hint-text">Что вы предложили бы сделать конкретно или какой аппарат придумали бы?</span>
       </div>
 
       <input type="text" id="user-idea" placeholder="Введите ваш вариант / Өз нұсқаңызды жазыңыз...">
@@ -207,7 +226,6 @@
   <script>
     Chart.register(ChartDataLabels);
 
-    // Бастапқы дауыстар саны (барлығы 10 дауыс)
     let voteData = [2, 1, 1, 1, 2, 1, 1, 1];
     const categories = ['Здоровье', 'Экология', 'Образование', 'Безопасность', 'Транспорт', 'Общение', 'Быт и экономия времени', 'Другое'];
 
@@ -239,6 +257,11 @@
       }
     });
 
+    // Категория таңдалғанда сұрақты көрсету функциясы
+    function showHint() {
+      document.getElementById('idea-hint').style.display = 'block';
+    }
+
     function submitVote() {
       const selected = document.querySelector('input[name="category"]:checked');
       const ideaText = document.getElementById('user-idea').value.trim();
@@ -267,7 +290,9 @@
       }
     }
 
+    let currentLang = 'kk';
     function setLanguage(lang) {
+      currentLang = lang;
       if(lang === 'kk') {
         document.getElementById('poll-title').innerText = 'Заманауи адамға қандай технологиялар қажет?';
         document.getElementById('user-idea').placeholder = 'Өз нұсқаңызды немесе идеяңызды жазыңыз...';
@@ -275,6 +300,7 @@
         document.getElementById('results-title').innerText = 'Сауалнама нәтижелері (Онлайн)';
         document.getElementById('total-text').innerText = '📊 Барлық дауыстар:';
         document.getElementById('ideas-title').innerText = 'Қатысушылардың идеялары:';
+        document.getElementById('hint-text').innerText = 'Нақты не істеуді ұсынар едіңіз немесе қандай құрылғы ойлап табар едіңіз?';
       } else {
         document.getElementById('poll-title').innerText = 'Какие технологии нужны современному человеку?';
         document.getElementById('user-idea').placeholder = 'Введите ваш вариант...';
@@ -282,6 +308,7 @@
         document.getElementById('results-title').innerText = 'Результаты опроса (Онлайн)';
         document.getElementById('total-text').innerText = '📊 Всего голосов:';
         document.getElementById('ideas-title').innerText = 'Идеи участников:';
+        document.getElementById('hint-text').innerText = 'Что вы предложили бы сделать конкретно или какой аппарат придумали бы?';
       }
     }
   </script>
