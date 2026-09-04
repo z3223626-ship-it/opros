@@ -89,7 +89,6 @@
       orderBy 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Firebase конфигурациясы сіздің ашық тұрған бетіңізден алынды
     const firebaseConfig = {
       apiKey: "AIzaSyDimu-9hYEmP7Gu4mKWNrsZlPFKVgoR4Kk",
       authDomain: "opros-2.firebaseapp.com",
@@ -141,7 +140,6 @@
       document.getElementById('total-votes').innerText = total;
     }
 
-    // Дауыстарды реалтайм тыңдау
     const votesDocRef = doc(db, "polls", "main_poll");
     onSnapshot(votesDocRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -157,7 +155,6 @@
       }
     });
 
-    // Идеяларды реалтайм тыңдау
     const ideasRef = collection(db, "ideas");
     const q = query(ideasRef, orderBy("createdAt", "desc"));
     onSnapshot(q, (snapshot) => {
@@ -172,7 +169,6 @@
       });
     });
 
-    // Дауыс беру және идея жіберу функциясы
     window.submitVote = async function() {
       const selected = document.querySelector('input[name="category"]:checked');
       const ideaText = document.getElementById('user-idea').value.trim();
