@@ -20,7 +20,6 @@
     .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
     .options label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     
-    /* Бағыт таңдалғанда шығатын нақтылайтын сұрақ */
     .idea-hint {
       display: none;
       background-color: #e0f2fe;
@@ -38,7 +37,7 @@
     .ideas-container { max-height: 450px; overflow-y: auto; margin-top: 15px; padding-right: 5px; display: flex; flex-direction: column; gap: 10px; }
     .idea-card { background: #f8fafc; border-left: 4px solid #10b981; padding: 12px 15px; border-radius: 6px; width: 100%; }
     .idea-card strong { display: block; color: #047857; font-size: 0.9rem; margin-bottom: 4px; }
-    .idea-card p { margin: 0; color: #334155; white-space: normal !important; word-wrap: break-word !important; line-height: 1.4; }
+    .idea-card p { margin: 0; color: #334155; white-space: normal !important; word-wrap: break-word !important; overflow: visible !important; line-height: 1.4; }
   </style>
 </head>
 <body>
@@ -62,7 +61,6 @@
         <label><input type="radio" name="category" value="Другое" onchange="showHint()"> <span class="cat-text">Другое</span></label>
       </div>
 
-      <!-- Бағыт таңдалғанда шығатын нақтылайтын сұрақ -->
       <div id="idea-hint" class="idea-hint">
         <strong>💡 Уточняющий вопрос для идей:</strong><br>
         <span id="hint-text">Что вы предложили бы сделать конкретно или какой аппарат придумали бы?</span>
@@ -99,7 +97,7 @@
   <script>
     Chart.register(ChartDataLabels);
 
-    let voteData = JSON.parse(localStorage.getItem('poll_votes_all')) || [2, 1, 1, 1, 2, 1, 1, 1];
+    let voteData = [2, 1, 1, 1, 2, 1, 1, 1];
     const categories = ['Здоровье', 'Экология', 'Образование', 'Безопасность', 'Транспорт', 'Общение', 'Быт и экономия времени', 'Другое'];
 
     const ctx = document.getElementById('pollChart').getContext('2d');
@@ -134,7 +132,6 @@
       let total = voteData.reduce((a, b) => a + b, 0);
       document.getElementById('total-votes').innerText = total;
     }
-    updateTotalVotesCount();
 
     function showHint() {
       document.getElementById('idea-hint').style.display = 'block';
@@ -152,7 +149,6 @@
       const catIndex = categories.indexOf(selected.value);
       if (catIndex !== -1) {
         voteData[catIndex]++;
-        try { localStorage.setItem('poll_votes_all', JSON.stringify(voteData)); } catch(e) {}
         pollChart.update();
         updateTotalVotesCount();
       }
@@ -163,29 +159,9 @@
         newCard.className = 'idea-card';
         newCard.innerHTML = `<strong>${selected.value}</strong><p>${ideaText}</p>`;
         container.insertBefore(newCard, container.firstChild);
-
-        try {
-          let storedIdeas = JSON.parse(localStorage.getItem('user_ideas_all') || '[]');
-          storedIdeas.unshift({ category: selected.value, text: ideaText });
-          localStorage.setItem('user_ideas_all', JSON.stringify(storedIdeas));
-        } catch(e) {}
-
         document.getElementById('user-idea').value = '';
       }
     }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      try {
-        let storedIdeas = JSON.parse(localStorage.getItem('user_ideas_all') || '[]');
-        const container = document.getElementById('ideasContainer');
-        storedIdeas.forEach(idea => {
-          const newCard = document.createElement('div');
-          newCard.className = 'idea-card';
-          newCard.innerHTML = `<strong>${idea.category}</strong><p>${idea.text}</p>`;
-          container.insertBefore(newCard, container.firstChild);
-        });
-      } catch(e) {}
-    });
 
     function setLanguage(lang) {
       if(lang === 'kk') {
