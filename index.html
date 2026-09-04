@@ -9,27 +9,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
-  <!-- Firebase (Онлайн Деректер Қоры) Module Scripts -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    // Firebase баптаулары (Ашық онлайн база)
-    const firebaseConfig = {
-      apiKey: "AIzaSyD-dummyKeyForOprosPoll2026",
-      authDomain: "opros-poll.firebaseapp.com",
-      projectId: "opros-poll",
-      storageBucket: "opros-poll.appspot.com",
-      messagingSenderId: "1029384756",
-      appId: "1:1029384756:web:abcd1234efgh"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    window.db = db;
-    window.firestoreTools = { collection, addDoc, onSnapshot, query, orderBy };
-  </script>
-
   <style>
     * {
       box-sizing: border-box;
@@ -211,7 +190,8 @@
   <script>
     Chart.register(ChartDataLabels);
 
-    let voteData = [2, 1, 1, 1, 2, 1, 1, 1];
+    // Дауыстарды браузер жадынан жүктеу (егер жоқ болса, бастапқы 10 дауысты алу)
+    let voteData = JSON.parse(localStorage.getItem('poll_votes')) || [2, 1, 1, 1, 2, 1, 1, 1];
     const categories = ['Здоровье', 'Экология', 'Образование', 'Безопасность', 'Транспорт', 'Общение', 'Быт и экономия времени', 'Другое'];
 
     const ctx = document.getElementById('pollChart').getContext('2d');
@@ -242,11 +222,18 @@
       }
     });
 
+    // Бет ашылғанда жалпы дауыстар санын жаңарту
+    function updateTotalVotesCount() {
+      let total = voteData.reduce((a, b) => a + b, 0);
+      document.getElementById('total-votes').innerText = total;
+    }
+    updateTotalVotesCount();
+
     function showHint() {
       document.getElementById('idea-hint').style.display = 'block';
     }
 
-    async function submitVote() {
+    function submitVote() {
       const selected = document.querySelector('input[name="category"]:checked');
       const ideaText = document.getElementById('user-idea').value.trim();
 
@@ -258,10 +245,14 @@
       const catIndex = categories.indexOf(selected.value);
       if (catIndex !== -1) {
         voteData[catIndex]++;
-        pollChart.update();
         
-        let total = voteData.reduce((a, b) => a + b, 0);
-        document.getElementById('total-votes').innerText = total;
+        // Дауыстарды сақтау
+        try {
+          localStorage.setItem('poll_votes', JSON.stringify(voteData));
+        } catch(e) {}
+
+        pollChart.update();
+        updateTotalVotesCount();
       }
 
       if (ideaText !== "") {
@@ -271,7 +262,7 @@
         newCard.innerHTML = `<strong>${selected.value}</strong><p>${ideaText}</p>`;
         container.insertBefore(newCard, container.firstChild);
 
-        // Браузердегі жергілікті жадыға (LocalStorage) уақытша сақтау
+        // Идеяны сақтау
         try {
           let storedIdeas = JSON.parse(localStorage.getItem('user_ideas') || '[]');
           storedIdeas.unshift({ category: selected.value, text: ideaText });
@@ -282,7 +273,7 @@
       }
     }
 
-    // Бет ашылғанда жергілікті сақталған жаңа идеяларды автоматты түрде жүктеу
+    // Бет ашылғанда сақталған идеяларды автоматты түрде жүктеу
     window.addEventListener('DOMContentLoaded', () => {
       try {
         let storedIdeas = JSON.parse(localStorage.getItem('user_ideas') || '[]');
