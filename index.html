@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Интерактивті сауалнама</title>
   
+  <!-- Chart.js & Plugins -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
@@ -19,18 +20,7 @@
     h2 { margin-top: 0; color: #333; font-size: 1.3rem; }
     .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
     .options label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-    
-    .idea-hint {
-      display: none;
-      background-color: #e0f2fe;
-      color: #0369a1;
-      padding: 12px 14px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      margin-bottom: 15px;
-      border-left: 4px solid #0284c7;
-    }
-
+    .idea-hint { display: none; background-color: #e0f2fe; color: #0369a1; padding: 12px 14px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 15px; border-left: 4px solid #0284c7; }
     input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px; }
     .btn-submit { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; }
     .btn-submit:hover { background: #2563eb; }
@@ -49,7 +39,7 @@
 
   <div class="container">
     <div class="card">
-      <h2 id="poll-title">Какие технологии нужны современному человеку? / Қандай технологиялар қажет?</h2>
+      <h2 id="poll-title">Қандай технологиялар қажет?</h2>
       <div class="options" id="options-list">
         <label><input type="radio" name="category" value="Здоровье" onchange="showHint()"> <span class="cat-text">Здоровье</span></label>
         <label><input type="radio" name="category" value="Экология" onchange="showHint()"> <span class="cat-text">Экология</span></label>
@@ -61,41 +51,62 @@
         <label><input type="radio" name="category" value="Другое" onchange="showHint()"> <span class="cat-text">Другое</span></label>
       </div>
 
-      <!-- Бағыт беретін көмекші мәтін (Подсказка) -->
       <div id="idea-hint" class="idea-hint">
-        <strong>💡 Уточняющий вопрос / Бағыт беретін сұрақ:</strong><br>
+        <strong>💡 Бағыт беретін сұрақ:</strong><br>
         <span id="hint-text">Что вы предложили бы сделать конкретно или какой аппарат придумали бы?</span>
       </div>
 
-      <input type="text" id="user-idea" placeholder="Введите ваш вариант / Өз нұсқаңызды жазыңыз...">
-      <button class="btn-submit" onclick="submitVote()" id="btn-text">Отправить свой вариант</button>
+      <input type="text" id="user-idea" placeholder="Өз нұсқаңызды жазыңыз...">
+      <button class="btn-submit" onclick="submitVote()" id="btn-text">Өз нұсқамды жіберу</button>
     </div>
 
     <div class="card">
-      <h2 id="results-title">Результаты опроса (Онлайн)</h2>
-      <p><span id="total-text">📊 Всего голосов / Барлық дауыстар:</span> <strong id="total-votes">0</strong></p>
+      <h2 id="results-title">Сауалнама нәтижелері (Онлайн)</h2>
+      <p><span id="total-text">📊 Барлық дауыстар:</span> <strong id="total-votes">0</strong></p>
       
       <div style="max-width: 320px; margin: 0 auto;">
         <canvas id="pollChart"></canvas>
       </div>
 
-      <h2 style="margin-top: 25px;" id="ideas-title">Идеи участников:</h2>
-      <div class="ideas-container" id="ideasContainer">
-        <div class="idea-card"><strong>Быт и экономия времени</strong><p>Уақыт ең қымбат дүние болып тұр. Уақытты үнемдеп жұмыс жасау тиімді болмақ.</p></div>
-        <div class="idea-card"><strong>Здоровье</strong><p>Жақсы мамандар мен телемедицина дамуы керек.</p></div>
-        <div class="idea-card"><strong>Экология</strong><p>Моя мечта — жить в чистом и красивом мире и помогать экологии развиваться дальше!</p></div>
-      </div>
+      <h2 style="margin-top: 25px;" id="ideas-title">Қатысушылардың идеялары:</h2>
+      <div class="ideas-container" id="ideasContainer"></div>
     </div>
   </div>
 
-  <script>
-    Chart.register(ChartDataLabels);
+  <!-- Firebase SDK Modular -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getFirestore, 
+      doc, 
+      onSnapshot, 
+      setDoc, 
+      updateDoc, 
+      increment, 
+      collection, 
+      addDoc, 
+      query, 
+      orderBy 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    // Firebase конфигурациясы сіздің ашық тұрған бетіңізден алынды
+    const firebaseConfig = {
+      apiKey: "AIzaSyDimu-9hYEmP7Gu4mKWNrsZlPFKVgoR4Kk",
+      authDomain: "opros-2.firebaseapp.com",
+      databaseURL: "https://opros-2-default-rtdb.firebaseio.com",
+      projectId: "opros-2",
+      storageBucket: "opros-2.firebasestorage.app",
+      messagingSenderId: "800470443555",
+      appId: "1:800470443555:web:337d26d7320d6ae684b396",
+      measurementId: "G-9YRVRYKEVV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    Chart.register(ChartDataLabels);
     const categories = ['Здоровье', 'Экология', 'Образование', 'Безопасность', 'Транспорт', 'Общение', 'Быт и экономия времени', 'Другое'];
-    
-    // Браузер жадынан (localStorage) бұрынғы дауыстарды жүктеу
-    let savedVotes = JSON.parse(localStorage.getItem('pollVotes'));
-    let voteData = savedVotes || [2, 1, 1, 1, 2, 1, 1, 1];
+    let voteData = [0, 0, 0, 0, 0, 0, 0, 0];
 
     const ctx = document.getElementById('pollChart').getContext('2d');
     const pollChart = new Chart(ctx, {
@@ -130,42 +141,72 @@
       document.getElementById('total-votes').innerText = total;
     }
 
-    // Параметр таңдалғанда подсказканы көрсету
-    function showHint() {
-      document.getElementById('idea-hint').style.display = 'block';
-    }
+    // Дауыстарды реалтайм тыңдау
+    const votesDocRef = doc(db, "polls", "main_poll");
+    onSnapshot(votesDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        voteData = categories.map(cat => data[cat] || 0);
+        pollChart.data.datasets[0].data = voteData;
+        pollChart.update();
+        updateTotalVotesCount();
+      } else {
+        const initialVotes = {};
+        categories.forEach(c => initialVotes[c] = 0);
+        setDoc(votesDocRef, initialVotes);
+      }
+    });
 
-    function submitVote() {
+    // Идеяларды реалтайм тыңдау
+    const ideasRef = collection(db, "ideas");
+    const q = query(ideasRef, orderBy("createdAt", "desc"));
+    onSnapshot(q, (snapshot) => {
+      const container = document.getElementById('ideasContainer');
+      container.innerHTML = '';
+      snapshot.forEach((doc) => {
+        const item = doc.data();
+        const newCard = document.createElement('div');
+        newCard.className = 'idea-card';
+        newCard.innerHTML = `<strong>${item.category}</strong><p>${item.text}</p>`;
+        container.appendChild(newCard);
+      });
+    });
+
+    // Дауыс беру және идея жіберу функциясы
+    window.submitVote = async function() {
       const selected = document.querySelector('input[name="category"]:checked');
       const ideaText = document.getElementById('user-idea').value.trim();
 
       if (!selected) {
-        alert('Категорияны таңдаңыз / Выберите категорию!');
+        alert('Категорияны таңдаңыз!');
         return;
       }
 
-      const catIndex = categories.indexOf(selected.value);
-      if (catIndex !== -1) {
-        voteData[catIndex]++;
-        
-        // Дауыс сандарын сақтау
-        localStorage.setItem('pollVotes', JSON.stringify(voteData));
-        
-        pollChart.update();
-        updateTotalVotesCount();
-      }
+      const catValue = selected.value;
 
-      if (ideaText !== "") {
-        const container = document.getElementById('ideasContainer');
-        const newCard = document.createElement('div');
-        newCard.className = 'idea-card';
-        newCard.innerHTML = `<strong>${selected.value}</strong><p>${ideaText}</p>`;
-        container.insertBefore(newCard, container.firstChild);
-        document.getElementById('user-idea').value = '';
-      }
-    }
+      try {
+        await updateDoc(votesDocRef, {
+          [catValue]: increment(1)
+        });
 
-    function setLanguage(lang) {
+        if (ideaText !== "") {
+          await addDoc(collection(db, "ideas"), {
+            category: catValue,
+            text: ideaText,
+            createdAt: new Date()
+          });
+          document.getElementById('user-idea').value = '';
+        }
+      } catch (e) {
+        console.error("Қате орын алды: ", e);
+      }
+    };
+
+    window.showHint = function() {
+      document.getElementById('idea-hint').style.display = 'block';
+    };
+
+    window.setLanguage = function(lang) {
       if(lang === 'kk') {
         document.getElementById('poll-title').innerText = 'Заманауи адамға қандай технологиялар қажет?';
         document.getElementById('user-idea').placeholder = 'Өз нұсқаңызды немесе идеяңызды жазыңыз...';
@@ -183,10 +224,7 @@
         document.getElementById('ideas-title').innerText = 'Идеи участников:';
         document.getElementById('hint-text').innerText = 'Что вы предложили бы сделать конкретно или какой аппарат придумали бы?';
       }
-    }
-
-    // Бастапқы жүктелу
-    updateTotalVotesCount();
+    };
   </script>
 </body>
 </html>
