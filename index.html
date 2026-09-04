@@ -5,145 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Интерактивті сауалнама</title>
   
-  <!-- Chart.js және ChartDataLabels плагиндері -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      background-color: #f4f7f6;
-      margin: 0;
-      padding: 20px;
-    }
-    .lang-switch {
-      text-align: right;
-      max-width: 1000px;
-      margin: 0 auto 15px auto;
-    }
-    .lang-switch button {
-      background: #fff;
-      border: 1px solid #ccc;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      margin-left: 5px;
-    }
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-    @media (max-width: 768px) {
-      .container { grid-template-columns: 1fr; }
-    }
-    .card {
-      background: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-    h2 {
-      margin-top: 0;
-      color: #333;
-      font-size: 1.3rem;
-    }
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .options label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f4f7f6; margin: 0; padding: 20px; }
+    .lang-switch { text-align: right; max-width: 1000px; margin: 0 auto 15px auto; }
+    .lang-switch button { background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-left: 5px; }
+    .container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+    .card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    h2 { margin-top: 0; color: #333; font-size: 1.3rem; }
+    .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .options label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     
-    /* Нақтылайтын сұраққа (Hint) арналған стиль */
     .idea-hint {
-      display: none; /* Басында жасырулы тұрады, категория таңдалғанда ашылады */
+      display: none;
       background-color: #e0f2fe;
       color: #0369a1;
-      padding: 10px 12px;
-      border-radius: 6px;
-      font-size: 0.88rem;
-      margin-bottom: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
       border-left: 4px solid #0284c7;
     }
 
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-bottom: 15px;
-    }
-    .btn-submit {
-      width: 100%;
-      padding: 12px;
-      background: #3b82f6;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .btn-submit:hover {
-      background: #2563eb;
-    }
-    
-    /* 10 Идеяның толық сыйып тұруына арналған стильдер */
-    .ideas-container {
-      max-height: 450px;
-      overflow-y: auto;
-      margin-top: 15px;
-      padding-right: 5px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .idea-card {
-      background: #f8fafc;
-      border-left: 4px solid #10b981;
-      padding: 12px 15px;
-      border-radius: 6px;
-      width: 100%;
-    }
-    .idea-card strong {
-      display: block;
-      color: #047857;
-      font-size: 0.9rem;
-      margin-bottom: 4px;
-    }
-    .idea-card p {
-      margin: 0;
-      color: #334155;
-      white-space: normal !important;
-      word-wrap: break-word !important;
-      overflow: visible !important;
-      line-height: 1.4;
-    }
+    input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px; }
+    .btn-submit { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+    .btn-submit:hover { background: #2563eb; }
+    .ideas-container { max-height: 450px; overflow-y: auto; margin-top: 15px; padding-right: 5px; display: flex; flex-direction: column; gap: 10px; }
+    .idea-card { background: #f8fafc; border-left: 4px solid #10b981; padding: 12px 15px; border-radius: 6px; width: 100%; }
+    .idea-card strong { display: block; color: #047857; font-size: 0.9rem; margin-bottom: 4px; }
+    .idea-card p { margin: 0; color: #334155; white-space: normal !important; word-wrap: break-word !important; overflow: visible !important; line-height: 1.4; }
   </style>
 </head>
 <body>
 
-  <!-- Тіл ауыстыру батырмалары -->
   <div class="lang-switch">
     <button onclick="setLanguage('kk')">🇰🇿 Қаз</button>
     <button onclick="setLanguage('ru')">🇷🇺 Рус</button>
   </div>
 
   <div class="container">
-    <!-- Сол жақ: Дауыс беру бөлімі -->
     <div class="card">
       <h2 id="poll-title">Какие технологии нужны современному человеку? / Қандай технологиялар қажет?</h2>
       <div class="options" id="options-list">
@@ -157,9 +61,9 @@
         <label><input type="radio" name="category" value="Другое" onchange="showHint()"> <span class="cat-text">Другое</span></label>
       </div>
 
-      <!-- Бағыт таңдалғанда шығатын нақтылайтын сұрақ -->
+      <!-- Бағыт беретін көмекші мәтін (Подсказка) -->
       <div id="idea-hint" class="idea-hint">
-        <strong>💡 Уточняющий вопрос для идей:</strong><br>
+        <strong>💡 Уточняющий вопрос / Бағыт беретін сұрақ:</strong><br>
         <span id="hint-text">Что вы предложили бы сделать конкретно или какой аппарат придумали бы?</span>
       </div>
 
@@ -167,10 +71,9 @@
       <button class="btn-submit" onclick="submitVote()" id="btn-text">Отправить свой вариант</button>
     </div>
 
-    <!-- Оң жақ: Диаграмма және Идеялар тізімі -->
     <div class="card">
       <h2 id="results-title">Результаты опроса (Онлайн)</h2>
-      <p><span id="total-text">📊 Всего голосов / Барлық дауыстар:</span> <strong id="total-votes">10</strong></p>
+      <p><span id="total-text">📊 Всего голосов / Барлық дауыстар:</span> <strong id="total-votes">0</strong></p>
       
       <div style="max-width: 320px; margin: 0 auto;">
         <canvas id="pollChart"></canvas>
@@ -178,47 +81,9 @@
 
       <h2 style="margin-top: 25px;" id="ideas-title">Идеи участников:</h2>
       <div class="ideas-container" id="ideasContainer">
-        <!-- Тұрақты сақталған 10 идея -->
-        <div class="idea-card">
-          <strong>Быт и экономия времени</strong>
-          <p>Уақыт ең қымбат дүние болып тұр. Уақытты үнемдеп жұмыс жасау тиімді болмақ.</p>
-        </div>
-        <div class="idea-card">
-          <strong>Здоровье</strong>
-          <p>Жақсы мамандар мен телемедицина дамуы керек.</p>
-        </div>
-        <div class="idea-card">
-          <strong>Экология</strong>
-          <p>Моя мечта — жить в чистом и красивом мире и помогать экологии развиваться дальше!</p>
-        </div>
-        <div class="idea-card">
-          <strong>Транспорт</strong>
-          <p>Летающий ковер самолет для быстрого передвижения без пробок</p>
-        </div>
-        <div class="idea-card">
-          <strong>Безопасность</strong>
-          <p>браслет с датчиком безопасности для детей и пожилых людей</p>
-        </div>
-        <div class="idea-card">
-          <strong>Образование</strong>
-          <p>Интерактивті онлайн платформалар мен жасанды интеллект репетиторлары</p>
-        </div>
-        <div class="idea-card">
-          <strong>Общение</strong>
-          <p>Тілдерді лезде аударатын смарт-құлаққаптар</p>
-        </div>
-        <div class="idea-card">
-          <strong>Здоровье</strong>
-          <p>Денсаулықты күнделікті бақылайтын ақылды сағаттар мен сенсорлар</p>
-        </div>
-        <div class="idea-card">
-          <strong>Быт и экономия времени</strong>
-          <p>Үй шаруасын толық орындайтын робот-ассистенттер</p>
-        </div>
-        <div class="idea-card">
-          <strong>Другое</strong>
-          <p>Энергия үнемдейтін және экологиялық таза жаңа технологиялар</p>
-        </div>
+        <div class="idea-card"><strong>Быт и экономия времени</strong><p>Уақыт ең қымбат дүние болып тұр. Уақытты үнемдеп жұмыс жасау тиімді болмақ.</p></div>
+        <div class="idea-card"><strong>Здоровье</strong><p>Жақсы мамандар мен телемедицина дамуы керек.</p></div>
+        <div class="idea-card"><strong>Экология</strong><p>Моя мечта — жить в чистом и красивом мире и помогать экологии развиваться дальше!</p></div>
       </div>
     </div>
   </div>
@@ -226,8 +91,11 @@
   <script>
     Chart.register(ChartDataLabels);
 
-    let voteData = [2, 1, 1, 1, 2, 1, 1, 1];
     const categories = ['Здоровье', 'Экология', 'Образование', 'Безопасность', 'Транспорт', 'Общение', 'Быт и экономия времени', 'Другое'];
+    
+    // Браузер жадынан (localStorage) бұрынғы дауыстарды жүктеу
+    let savedVotes = JSON.parse(localStorage.getItem('pollVotes'));
+    let voteData = savedVotes || [2, 1, 1, 1, 2, 1, 1, 1];
 
     const ctx = document.getElementById('pollChart').getContext('2d');
     const pollChart = new Chart(ctx, {
@@ -247,7 +115,7 @@
               let sum = 0;
               let dataArr = ctx.chart.data.datasets[0].data;
               dataArr.map(data => { sum += data; });
-              let percentage = (value * 100 / sum).toFixed(1) + "%";
+              let percentage = sum > 0 ? (value * 100 / sum).toFixed(1) + "%" : "0%";
               return value > 0 ? percentage : '';
             },
             color: '#fff',
@@ -257,7 +125,12 @@
       }
     });
 
-    // Категория таңдалғанда сұрақты көрсету функциясы
+    function updateTotalVotesCount() {
+      let total = voteData.reduce((a, b) => a + b, 0);
+      document.getElementById('total-votes').innerText = total;
+    }
+
+    // Параметр таңдалғанда подсказканы көрсету
     function showHint() {
       document.getElementById('idea-hint').style.display = 'block';
     }
@@ -274,10 +147,12 @@
       const catIndex = categories.indexOf(selected.value);
       if (catIndex !== -1) {
         voteData[catIndex]++;
-        pollChart.update();
         
-        let total = voteData.reduce((a, b) => a + b, 0);
-        document.getElementById('total-votes').innerText = total;
+        // Дауыс сандарын сақтау
+        localStorage.setItem('pollVotes', JSON.stringify(voteData));
+        
+        pollChart.update();
+        updateTotalVotesCount();
       }
 
       if (ideaText !== "") {
@@ -290,9 +165,7 @@
       }
     }
 
-    let currentLang = 'kk';
     function setLanguage(lang) {
-      currentLang = lang;
       if(lang === 'kk') {
         document.getElementById('poll-title').innerText = 'Заманауи адамға қандай технологиялар қажет?';
         document.getElementById('user-idea').placeholder = 'Өз нұсқаңызды немесе идеяңызды жазыңыз...';
@@ -300,7 +173,7 @@
         document.getElementById('results-title').innerText = 'Сауалнама нәтижелері (Онлайн)';
         document.getElementById('total-text').innerText = '📊 Барлық дауыстар:';
         document.getElementById('ideas-title').innerText = 'Қатысушылардың идеялары:';
-        document.getElementById('hint-text').innerText = 'Нақты не істеуді ұсынар едіңіз немесе қандай құрылғы ойлап табар едіңіз?';
+        document.getElementById('hint-text').innerText = 'Что вы предложили бы сделать конкретно или какой аппарат придумали бы?';
       } else {
         document.getElementById('poll-title').innerText = 'Какие технологии нужны современному человеку?';
         document.getElementById('user-idea').placeholder = 'Введите ваш вариант...';
@@ -311,6 +184,9 @@
         document.getElementById('hint-text').innerText = 'Что вы предложили бы сделать конкретно или какой аппарат придумали бы?';
       }
     }
+
+    // Бастапқы жүктелу
+    updateTotalVotesCount();
   </script>
 </body>
 </html>
