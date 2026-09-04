@@ -88,32 +88,34 @@
       background: #2563eb;
     }
     
-    /* Идеялар тізімінің стильдері (мәтін кесілмейді, толық ашылады) */
+    /* Текстің ТӨЛЫҚ КӨРІНУІНЕ арналған жаңартылған стильдер */
     .ideas-container {
-      max-height: 400px;
-      overflow-y: auto;
       margin-top: 15px;
-      padding-right: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     .idea-card {
       background: #f8fafc;
       border-left: 4px solid #10b981;
       padding: 12px 15px;
       border-radius: 6px;
-      margin-bottom: 10px;
-      height: auto;
+      width: 100%;
     }
     .idea-card strong {
       display: block;
       color: #047857;
       font-size: 0.9rem;
+      margin-bottom: 4px;
     }
     .idea-card p {
-      margin: 5px 0 0 0;
+      margin: 0;
       color: #334155;
-      white-space: normal;
-      word-break: break-word;
-      overflow: visible;
+      white-space: normal !important;
+      word-wrap: break-word !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      line-height: 1.4;
     }
   </style>
 </head>
@@ -170,7 +172,7 @@
         </div>
         <div class="idea-card">
           <strong>Транспорт</strong>
-          <p>Летающий ковер самолет</p>
+          <p>Летающий ковер самолет для быстрого передвижения</p>
         </div>
         <div class="idea-card">
           <strong>Безопасность</strong>
@@ -181,7 +183,6 @@
   </div>
 
   <script>
-    // ChartDataLabels плагинін Chart.js-ке тіркеу
     Chart.register(ChartDataLabels);
 
     let voteData = [2, 1, 1, 1, 2, 1, 3, 1];
@@ -243,7 +244,6 @@
       }
     }
 
-    // Тілді ауыстыру функциясы
     function setLanguage(lang) {
       if(lang === 'kk') {
         document.getElementById('poll-title').innerText = 'Заманауи адамға қандай технологиялар қажет?';
