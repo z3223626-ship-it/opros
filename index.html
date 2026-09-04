@@ -5,67 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Интерактивті сауалнама</title>
   
-  <!-- Chart.js және ChartDataLabels плагиндері -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      background-color: #f4f7f6;
-      margin: 0;
-      padding: 20px;
-    }
-    .lang-switch {
-      text-align: right;
-      max-width: 1000px;
-      margin: 0 auto 15px auto;
-    }
-    .lang-switch button {
-      background: #fff;
-      border: 1px solid #ccc;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      margin-left: 5px;
-    }
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-    @media (max-width: 768px) {
-      .container { grid-template-columns: 1fr; }
-    }
-    .card {
-      background: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-    h2 {
-      margin-top: 0;
-      color: #333;
-      font-size: 1.3rem;
-    }
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .options label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f4f7f6; margin: 0; padding: 20px; }
+    .lang-switch { text-align: right; max-width: 1000px; margin: 0 auto 15px auto; }
+    .lang-switch button { background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-left: 5px; }
+    .container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+    .card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    h2 { margin-top: 0; color: #333; font-size: 1.3rem; }
+    .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .options label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    
+    /* Бағыт таңдалғанда шығатын нақтылайтын сұрақ */
     .idea-hint {
       display: none;
       background-color: #e0f2fe;
@@ -76,69 +31,24 @@
       margin-bottom: 12px;
       border-left: 4px solid #0284c7;
     }
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-bottom: 15px;
-    }
-    .btn-submit {
-      width: 100%;
-      padding: 12px;
-      background: #3b82f6;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .btn-submit:hover {
-      background: #2563eb;
-    }
-    .ideas-container {
-      max-height: 450px;
-      overflow-y: auto;
-      margin-top: 15px;
-      padding-right: 5px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .idea-card {
-      background: #f8fafc;
-      border-left: 4px solid #10b981;
-      padding: 12px 15px;
-      border-radius: 6px;
-      width: 100%;
-    }
-    .idea-card strong {
-      display: block;
-      color: #047857;
-      font-size: 0.9rem;
-      margin-bottom: 4px;
-    }
-    .idea-card p {
-      margin: 0;
-      color: #334155;
-      white-space: normal !important;
-      word-wrap: break-word !important;
-      overflow: visible !important;
-      line-height: 1.4;
-    }
+
+    input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px; }
+    .btn-submit { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+    .btn-submit:hover { background: #2563eb; }
+    .ideas-container { max-height: 450px; overflow-y: auto; margin-top: 15px; padding-right: 5px; display: flex; flex-direction: column; gap: 10px; }
+    .idea-card { background: #f8fafc; border-left: 4px solid #10b981; padding: 12px 15px; border-radius: 6px; width: 100%; }
+    .idea-card strong { display: block; color: #047857; font-size: 0.9rem; margin-bottom: 4px; }
+    .idea-card p { margin: 0; color: #334155; white-space: normal !important; word-wrap: break-word !important; line-height: 1.4; }
   </style>
 </head>
 <body>
 
-  <!-- Тіл ауыстыру батырмалары -->
   <div class="lang-switch">
     <button onclick="setLanguage('kk')">🇰🇿 Қаз</button>
     <button onclick="setLanguage('ru')">🇷🇺 Рус</button>
   </div>
 
   <div class="container">
-    <!-- Сол жақ: Дауыс беру бөлімі -->
     <div class="card">
       <h2 id="poll-title">Какие технологии нужны современному человеку? / Қандай технологиялар қажет?</h2>
       <div class="options" id="options-list">
@@ -152,6 +62,7 @@
         <label><input type="radio" name="category" value="Другое" onchange="showHint()"> <span class="cat-text">Другое</span></label>
       </div>
 
+      <!-- Бағыт таңдалғанда шығатын нақтылайтын сұрақ -->
       <div id="idea-hint" class="idea-hint">
         <strong>💡 Уточняющий вопрос для идей:</strong><br>
         <span id="hint-text">Что вы предложили бы сделать конкретно или какой аппарат придумали бы?</span>
@@ -161,7 +72,6 @@
       <button class="btn-submit" onclick="submitVote()" id="btn-text">Отправить свой вариант</button>
     </div>
 
-    <!-- Оң жақ: Диаграмма және Идеялар тізімі -->
     <div class="card">
       <h2 id="results-title">Результаты опроса (Онлайн)</h2>
       <p><span id="total-text">📊 Всего голосов / Барлық дауыстар:</span> <strong id="total-votes">10</strong></p>
@@ -172,7 +82,6 @@
 
       <h2 style="margin-top: 25px;" id="ideas-title">Идеи участников:</h2>
       <div class="ideas-container" id="ideasContainer">
-        <!-- Жергілікті бастапқы идеялар тізімі -->
         <div class="idea-card"><strong>Быт и экономия времени</strong><p>Уақыт ең қымбат дүние болып тұр. Уақытты үнемдеп жұмыс жасау тиімді болмақ.</p></div>
         <div class="idea-card"><strong>Здоровье</strong><p>Жақсы мамандар мен телемедицина дамуы керек.</p></div>
         <div class="idea-card"><strong>Экология</strong><p>Моя мечта — жить в чистом и красивом мире и помогать экологии развиваться дальше!</p></div>
@@ -190,8 +99,7 @@
   <script>
     Chart.register(ChartDataLabels);
 
-    // Сақталған дауыстарды браузерден жүктеу
-    let voteData = JSON.parse(localStorage.getItem('poll_votes_v2')) || [2, 1, 1, 1, 2, 1, 1, 1];
+    let voteData = JSON.parse(localStorage.getItem('poll_votes_all')) || [2, 1, 1, 1, 2, 1, 1, 1];
     const categories = ['Здоровье', 'Экология', 'Образование', 'Безопасность', 'Транспорт', 'Общение', 'Быт и экономия времени', 'Другое'];
 
     const ctx = document.getElementById('pollChart').getContext('2d');
@@ -244,11 +152,7 @@
       const catIndex = categories.indexOf(selected.value);
       if (catIndex !== -1) {
         voteData[catIndex]++;
-        
-        try {
-          localStorage.setItem('poll_votes_v2', JSON.stringify(voteData));
-        } catch(e) {}
-
+        try { localStorage.setItem('poll_votes_all', JSON.stringify(voteData)); } catch(e) {}
         pollChart.update();
         updateTotalVotesCount();
       }
@@ -261,9 +165,9 @@
         container.insertBefore(newCard, container.firstChild);
 
         try {
-          let storedIdeas = JSON.parse(localStorage.getItem('user_ideas_v2') || '[]');
+          let storedIdeas = JSON.parse(localStorage.getItem('user_ideas_all') || '[]');
           storedIdeas.unshift({ category: selected.value, text: ideaText });
-          localStorage.setItem('user_ideas_v2', JSON.stringify(storedIdeas));
+          localStorage.setItem('user_ideas_all', JSON.stringify(storedIdeas));
         } catch(e) {}
 
         document.getElementById('user-idea').value = '';
@@ -272,7 +176,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       try {
-        let storedIdeas = JSON.parse(localStorage.getItem('user_ideas_v2') || '[]');
+        let storedIdeas = JSON.parse(localStorage.getItem('user_ideas_all') || '[]');
         const container = document.getElementById('ideasContainer');
         storedIdeas.forEach(idea => {
           const newCard = document.createElement('div');
